@@ -19,15 +19,6 @@ const config = {
       'material-ui/lib': path.resolve(__dirname, '../src'),
       'material-ui': path.resolve(__dirname, '../src'),
     },
-    //Modules will be searched for in these directories
-    modulesDirectories: [
-      // We need /docs/node_modules to be resolved before /node_modules
-      path.resolve(__dirname, 'node_modules'),
-      'node_modules',
-      path.resolve(__dirname, '../src'),
-      path.resolve(__dirname, 'src/app/components/raw-code'),
-      path.resolve(__dirname, 'src/app/components/markdown'),
-    ],
   },
   //Configuration for dev server
   devServer: {
@@ -58,17 +49,6 @@ const config = {
     fs: 'js', // To remove once https://github.com/benjamn/recast/pull/238 is released
   },
   module: {
-    //eslint loader
-    preLoaders: [
-      {
-        test: /\.(js|jsx)$/,
-        loader: 'eslint-loader',
-        include: [path.resolve(__dirname, '../src')],
-        exclude: [
-          path.resolve(__dirname, '../src/svg-icons'),
-        ],
-      },
-    ],
     //Allow loading of non-es
     loaders: [
       {

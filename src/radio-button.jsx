@@ -155,8 +155,8 @@ const RadioButton = React.createClass({
   },
 
   // Only called when selected, not when unselected.
-  _handleCheck(e) {
-    if (this.props.onCheck) this.props.onCheck(e, this.props.value);
+  _handleCheck(event) {
+    if (this.props.onCheck) this.props.onCheck(event, this.props.value);
   },
 
   _handleStateChange() {
@@ -205,13 +205,17 @@ const RadioButton = React.createClass({
       disabled && styles.fillWhenDisabled
     );
 
-    const uncheckedElement = React.isValidElement(uncheckedIcon)
-      ? React.cloneElement(uncheckedIcon, {style: Object.assign(uncheckedStyles, uncheckedIcon.props.style)})
-      : <RadioButtonOff style={uncheckedStyles}/>;
+    const uncheckedElement = React.isValidElement(uncheckedIcon) ?
+      React.cloneElement(uncheckedIcon, {
+        style: Object.assign(uncheckedStyles, uncheckedIcon.props.style),
+      }) :
+      <RadioButtonOff style={uncheckedStyles} />;
 
-    const checkedElement = React.isValidElement(checkedIcon)
-      ? React.cloneElement(checkedIcon, {style: Object.assign(checkedStyles, checkedIcon.props.style)})
-      : <RadioButtonOn style={checkedStyles}/>;
+    const checkedElement = React.isValidElement(checkedIcon) ?
+      React.cloneElement(checkedIcon, {
+        style: Object.assign(checkedStyles, checkedIcon.props.style),
+      }) :
+      <RadioButtonOn style={checkedStyles} />;
 
     const mergedIconStyle = Object.assign(styles.icon, iconStyle);
     const mergedLabelStyle = Object.assign(styles.label, labelStyle);

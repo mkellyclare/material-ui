@@ -1,9 +1,10 @@
 import React from 'react';
 import getMuiTheme from './styles/getMuiTheme';
 import Transitions from './styles/transitions';
-import Colors from './styles/colors';
 
-function getStyles(props) {
+function getStyles(props, state) {
+  const {overlay} = state.muiTheme;
+
   const style = {
     root: {
       position: 'fixed',
@@ -12,8 +13,8 @@ function getStyles(props) {
       top: 0,
       left: '-100%',
       opacity: 0,
-      backgroundColor: Colors.lightBlack,
-      WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+      backgroundColor: overlay.backgroundColor,
+      WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)', // Remove mobile color flashing (deprecated)
 
       // Two ways to promote overlay to its own render layer
       willChange: 'opacity',
@@ -82,7 +83,6 @@ const Overlay = React.createClass({
     if (this.props.show !== nextProps.show) {
       this._applyAutoLockScrolling(nextProps);
     }
-
   },
 
   componentWillUnmount() {

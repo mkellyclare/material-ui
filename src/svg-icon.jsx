@@ -83,14 +83,14 @@ const SvgIcon = React.createClass({
     });
   },
 
-  _handleMouseLeave(e) {
+  _handleMouseLeave(event) {
     this.setState({hovered: false});
-    this.props.onMouseLeave(e);
+    this.props.onMouseLeave(event);
   },
 
-  _handleMouseEnter(e) {
+  _handleMouseEnter(event) {
     this.setState({hovered: true});
-    this.props.onMouseEnter(e);
+    this.props.onMouseEnter(event);
   },
 
   render() {
@@ -124,15 +124,11 @@ const SvgIcon = React.createClass({
       transition: Transitions.easeOut(),
     }, style);
 
-    const events = hoverColor ? {
-      onMouseEnter: this._handleMouseEnter,
-      onMouseLeave: this._handleMouseLeave,
-    } : {};
-
     return (
       <svg
         {...other}
-        {...events}
+        onMouseEnter={this._handleMouseEnter}
+        onMouseLeave={this._handleMouseLeave}
         style={prepareStyles(mergedStyles)}
         viewBox={viewBox}
       >

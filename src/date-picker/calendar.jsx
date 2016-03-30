@@ -1,7 +1,7 @@
 import React from 'react';
 import EventListener from 'react-event-listener';
 import DateTime from '../utils/date-time';
-import KeyCode from '../utils/key-code';
+import keycode from 'keycode';
 import Transitions from '../styles/transitions';
 import CalendarMonth from './calendar-month';
 import CalendarYear from './calendar-year';
@@ -147,9 +147,9 @@ const Calendar = React.createClass({
     }
   },
 
-  _handleDayTouchTap(e, date) {
+  _handleDayTouchTap(event, date) {
     this._setSelectedDate(date);
-    if (this.props.onDayTouchTap) this.props.onDayTouchTap(e, date);
+    if (this.props.onDayTouchTap) this.props.onDayTouchTap(event, date);
   },
 
   _handleMonthChange(months) {
@@ -159,10 +159,10 @@ const Calendar = React.createClass({
     });
   },
 
-  _handleYearTouchTap(e, year) {
+  _handleYearTouchTap(event, year) {
     const date = DateTime.clone(this.state.selectedDate);
     date.setFullYear(year);
-    this._setSelectedDate(date, e);
+    this._setSelectedDate(date, event);
   },
 
   _getToolbarInteractions() {
@@ -184,44 +184,43 @@ const Calendar = React.createClass({
     });
   },
 
-  _handleWindowKeyDown(e) {
+  _handleWindowKeyDown(event) {
     if (this.props.open) {
-
-      switch (e.keyCode) {
-        case KeyCode.UP:
-          if (e.altKey && e.shiftKey) {
+      switch (keycode(event)) {
+        case 'up':
+          if (event.altKey && event.shiftKey) {
             this._addSelectedYears(-1);
-          } else if (e.shiftKey) {
+          } else if (event.shiftKey) {
             this._addSelectedMonths(-1);
           } else {
             this._addSelectedDays(-7);
           }
           break;
 
-        case KeyCode.DOWN:
-          if (e.altKey && e.shiftKey) {
+        case 'down':
+          if (event.altKey && event.shiftKey) {
             this._addSelectedYears(1);
-          } else if (e.shiftKey) {
+          } else if (event.shiftKey) {
             this._addSelectedMonths(1);
           } else {
             this._addSelectedDays(7);
           }
           break;
 
-        case KeyCode.RIGHT:
-          if (e.altKey && e.shiftKey) {
+        case 'right':
+          if (event.altKey && event.shiftKey) {
             this._addSelectedYears(1);
-          } else if (e.shiftKey) {
+          } else if (event.shiftKey) {
             this._addSelectedMonths(1);
           } else {
             this._addSelectedDays(1);
           }
           break;
 
-        case KeyCode.LEFT:
-          if (e.altKey && e.shiftKey) {
+        case 'left':
+          if (event.altKey && event.shiftKey) {
             this._addSelectedYears(-1);
-          } else if (e.shiftKey) {
+          } else if (event.shiftKey) {
             this._addSelectedMonths(-1);
           } else {
             this._addSelectedDays(-1);
@@ -232,7 +231,6 @@ const Calendar = React.createClass({
   },
 
   render() {
-
     const {
       prepareStyles,
     } = this.state.muiTheme;
@@ -309,6 +307,7 @@ const Calendar = React.createClass({
           handleYearClick={this._handleYearClick}
           monthDaySelected={this.state.displayMonthDay}
           mode={this.props.mode}
+          muiTheme={this.state.muiTheme}
           weekCount={weekCount}
         />
         {this.state.displayMonthDay &&
@@ -325,7 +324,7 @@ const Calendar = React.createClass({
               elementType="ul"
               style={styles.weekTitle}
             >
-              {daysArray.map((e, i) => (
+              {daysArray.map((event, i) => (
                 <li key={i} style={weekTitleDayStyle}>
                   {DateTime.localizedWeekday(DateTimeFormat, locale, i, firstDayOfWeek)}
                 </li>

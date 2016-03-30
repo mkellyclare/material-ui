@@ -49,6 +49,7 @@ const TableHeaderColumn = React.createClass({
     key: React.PropTypes.string,
 
     /**
+     * @ignore
      * Callback function for click event.
      */
     onClick: React.PropTypes.func,
@@ -105,8 +106,8 @@ const TableHeaderColumn = React.createClass({
     if (this.props.tooltip !== undefined) this.setState({hovered: false});
   },
 
-  _onClick(e) {
-    if (this.props.onClick) this.props.onClick(e, this.props.columnNumber);
+  _onClick(event) {
+    if (this.props.onClick) this.props.onClick(event, this.props.columnNumber);
   },
 
   render() {

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Colors from '../styles/colors';
 import DateTime from '../utils/date-time';
 import YearButton from './year-button';
+import getMuiTheme from '../styles/getMuiTheme';
 
 const CalendarYear = React.createClass({
 
@@ -12,6 +12,26 @@ const CalendarYear = React.createClass({
     minDate: React.PropTypes.object,
     onYearTouchTap: React.PropTypes.func,
     selectedDate: React.PropTypes.object.isRequired,
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object,
+  },
+
+  childContextTypes: {
+    muiTheme: React.PropTypes.object,
+  },
+
+  getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme || getMuiTheme(),
+    };
+  },
+
+  getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme,
+    };
   },
 
   componentDidMount() {
@@ -30,7 +50,6 @@ const CalendarYear = React.createClass({
     const dateCheck = DateTime.clone(this.props.selectedDate);
     for (let year = minYear; year <= maxYear; year++) {
       dateCheck.setFullYear(year);
-      if (!DateTime.isBetweenDates(dateCheck, this.props.minDate, this.props.maxDate)) continue;
       const selected = this.props.selectedDate.getFullYear() === year;
       let selectedProps = {};
       if (selected) {
@@ -66,19 +85,20 @@ const CalendarYear = React.createClass({
     container.scrollTop = scrollYOffset;
   },
 
-  _handleYearTouchTap(e, year) {
-    if (this.props.onYearTouchTap) this.props.onYearTouchTap(e, year);
+  _handleYearTouchTap(event, year) {
+    if (this.props.onYearTouchTap) this.props.onYearTouchTap(event, year);
   },
 
   render() {
     const years = this._getYears();
+    const backgroundColor = this.state.muiTheme.datePicker.calendarYearBackgroundColor;
     const styles = {
       position: 'relative',
       height: 'inherit',
       lineHeight: '36px',
       textAlign: 'center',
       padding: '8px 14px 0 14px',
-      backgroundColor: Colors.white,
+      backgroundColor: backgroundColor,
       overflowX: 'hidden',
       overflowY: 'scroll',
     };

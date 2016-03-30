@@ -20,7 +20,7 @@ function getStyles(props, state) {
   return {
     root: {
       boxSizing: 'border-box',
-      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)', // Remove mobile color flashing (deprecated)
       position: 'relative',
       display: 'block',
       margin: '0 auto',
@@ -99,8 +99,8 @@ const YearButton = React.createClass({
     this.setState({hover: false});
   },
 
-  _handleTouchTap(e) {
-    if (this.props.onTouchTap) this.props.onTouchTap(e, this.props.year);
+  _handleTouchTap(event) {
+    if (this.props.onTouchTap) this.props.onTouchTap(event, this.props.year);
   },
 
   render() {

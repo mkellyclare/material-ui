@@ -1,11 +1,15 @@
 import merge from 'lodash.merge';
-import Colors from './colors';
 import ColorManipulator from '../utils/color-manipulator';
 import lightBaseTheme from './baseThemes/lightBaseTheme';
 import zIndex from './zIndex';
 import {autoprefixer, callOnce, rtl} from './transformers';
 import compose from 'lodash.flowright';
 import Typography from '../styles/typography';
+import {
+red500,
+grey400, grey500, grey600, grey700,
+transparent, lightWhite, white, darkWhite, lightBlack, black,
+} from './colors';
 
 /**
  * Get the MUI theme corresponding to a base theme.
@@ -13,24 +17,32 @@ import Typography from '../styles/typography';
  * by providing a second argument. The calculated
  * theme will be deeply merged with the second argument.
  */
-export default function getMuiTheme(baseTheme, muiTheme) {
-  baseTheme = merge({}, lightBaseTheme, baseTheme);
-  const {
-    palette,
-    spacing,
-  } = baseTheme;
-
+export default function getMuiTheme(muiTheme, ...more) {
   muiTheme = merge({
+    zIndex,
     isRtl: false,
     userAgent: undefined,
-    zIndex,
-    baseTheme,
-    rawTheme: baseTheme, // To provide backward compatibility.
+  }, lightBaseTheme, muiTheme, ...more);
+
+  const {
+    spacing,
+    fontFamily,
+    palette,
+  } = muiTheme;
+
+  const baseTheme = {
+    spacing,
+    fontFamily,
+    palette,
+  };
+
+  muiTheme = merge({
     appBar: {
       color: palette.primary1Color,
       textColor: palette.alternateTextColor,
       height: spacing.desktopKeylineIncrement,
       titleFontWeight: Typography.fontWeightNormal,
+      padding: spacing.desktopGutter,
     },
     avatar: {
       color: palette.canvasColor,
@@ -59,10 +71,10 @@ export default function getMuiTheme(baseTheme, muiTheme) {
       fontWeight: Typography.fontWeightMedium,
     },
     cardMedia: {
-      color: Colors.darkWhite,
-      overlayContentBackground: Colors.lightBlack,
-      titleColor: Colors.darkWhite,
-      subtitleColor: Colors.lightWhite,
+      color: darkWhite,
+      overlayContentBackground: lightBlack,
+      titleColor: darkWhite,
+      subtitleColor: lightWhite,
     },
     cardText: {
       textColor: palette.textColor,
@@ -81,26 +93,30 @@ export default function getMuiTheme(baseTheme, muiTheme) {
       calendarTextColor: palette.textColor,
       selectColor: palette.primary2Color,
       selectTextColor: palette.alternateTextColor,
+      calendarYearBackgroundColor: white,
     },
     dropDownMenu: {
       accentColor: palette.borderColor,
     },
+    enhancedButton: {
+      tapHighlightColor: transparent,
+    },
     flatButton: {
-      color: Colors.transparent,
+      color: transparent,
       buttonFilterColor: '#999999',
       disabledTextColor: ColorManipulator.fade(palette.textColor, 0.3),
       textColor: palette.textColor,
-      primaryTextColor: palette.accent1Color,
-      secondaryTextColor: palette.primary1Color,
+      primaryTextColor: palette.primary1Color,
+      secondaryTextColor: palette.accent1Color,
       fontSize: Typography.fontStyleButtonFontSize,
       fontWeight: Typography.fontWeightMedium,
     },
     floatingActionButton: {
       buttonSize: 56,
       miniSize: 40,
-      color: palette.accent1Color,
+      color: palette.primary1Color,
       iconColor: palette.alternateTextColor,
-      secondaryColor: palette.primary1Color,
+      secondaryColor: palette.accent1Color,
       secondaryIconColor: palette.alternateTextColor,
       disabledTextColor: palette.disabledColor,
       disabledColor: ColorManipulator.luminance(palette.canvasColor) > 0.5 ?
@@ -108,7 +124,7 @@ export default function getMuiTheme(baseTheme, muiTheme) {
         ColorManipulator.lighten(palette.canvasColor, 1.12, 1.0),
     },
     gridTile: {
-      textColor: Colors.white,
+      textColor: white,
     },
     inkBar: {
       backgroundColor: palette.accent1Color,
@@ -119,7 +135,9 @@ export default function getMuiTheme(baseTheme, muiTheme) {
     },
     listItem: {
       nestedLevelDepth: 18,
-      secondaryTextColor: Colors.lightBlack,
+      secondaryTextColor: lightBlack,
+      leftIconColor: grey600,
+      rightIconColor: grey400,
     },
     menu: {
       backgroundColor: palette.canvasColor,
@@ -131,11 +149,15 @@ export default function getMuiTheme(baseTheme, muiTheme) {
       hoverColor: ColorManipulator.fade(palette.textColor, 0.035),
       padding: spacing.desktopGutter,
       selectedTextColor: palette.accent1Color,
+      rightIconDesktopFill: grey600,
     },
     menuSubheader: {
       padding: spacing.desktopGutter,
       borderColor: palette.borderColor,
       textColor: palette.primary1Color,
+    },
+    overlay: {
+      backgroundColor: lightBlack,
     },
     paper: {
       color: palette.textColor,
@@ -164,9 +186,9 @@ export default function getMuiTheme(baseTheme, muiTheme) {
     raisedButton: {
       color: palette.alternateTextColor,
       textColor: palette.textColor,
-      primaryColor: palette.accent1Color,
+      primaryColor: palette.primary1Color,
       primaryTextColor: palette.alternateTextColor,
-      secondaryColor: palette.primary1Color,
+      secondaryColor: palette.accent1Color,
       secondaryTextColor: palette.alternateTextColor,
       disabledColor: ColorManipulator.darken(palette.alternateTextColor, 0.1),
       disabledTextColor: ColorManipulator.fade(palette.textColor, 0.3),
@@ -200,8 +222,26 @@ export default function getMuiTheme(baseTheme, muiTheme) {
       color: ColorManipulator.fade(palette.textColor, 0.54),
       fontWeight: Typography.fontWeightMedium,
     },
+    stepper: {
+      activeAvatarColor: palette.primary1Color,
+      hoveredAvatarColor: grey700,
+      inactiveAvatarColor: grey500,
+
+      inactiveTextColor: ColorManipulator.fade(black, 0.26),
+      activeTextColor: ColorManipulator.fade(black, 0.87),
+      hoveredTextColor: grey600,
+
+      hoveredHeaderColor: ColorManipulator.fade(black, 0.06),
+
+      connectorLineColor: grey400,
+      avatarSize: 24,
+    },
     table: {
       backgroundColor: palette.canvasColor,
+    },
+    tableFooter: {
+      borderColor: palette.borderColor,
+      textColor: palette.accent3Color,
     },
     tableHeader: {
       borderColor: palette.borderColor,
@@ -210,10 +250,6 @@ export default function getMuiTheme(baseTheme, muiTheme) {
       textColor: palette.accent3Color,
       height: 56,
       spacing: 24,
-    },
-    tableFooter: {
-      borderColor: palette.borderColor,
-      textColor: palette.accent3Color,
     },
     tableRow: {
       hoverColor: palette.accent2Color,
@@ -226,6 +262,21 @@ export default function getMuiTheme(baseTheme, muiTheme) {
     tableRowColumn: {
       height: 48,
       spacing: 24,
+    },
+    tabs: {
+      backgroundColor: palette.primary1Color,
+      textColor: ColorManipulator.fade(palette.alternateTextColor, 0.7),
+      selectedTextColor: palette.alternateTextColor,
+    },
+    textField: {
+      textColor: palette.textColor,
+      hintColor: palette.disabledColor,
+      floatingLabelColor: palette.textColor,
+      disabledTextColor: palette.disabledColor,
+      errorColor: red500,
+      focusColor: palette.primary1Color,
+      backgroundColor: 'transparent',
+      borderColor: palette.borderColor,
     },
     timePicker: {
       color: palette.alternateTextColor,
@@ -259,22 +310,14 @@ export default function getMuiTheme(baseTheme, muiTheme) {
       separatorColor: ColorManipulator.fade(palette.textColor, 0.175),
       menuHoverColor: ColorManipulator.fade(palette.textColor, 0.1),
     },
-    tabs: {
-      backgroundColor: palette.primary1Color,
-      textColor: ColorManipulator.fade(palette.alternateTextColor, 0.7),
-      selectedTextColor: palette.alternateTextColor,
+    tooltip: {
+      color: white,
+      rippleBackgroundColor: grey700,
     },
-    textField: {
-      textColor: palette.textColor,
-      hintColor: palette.disabledColor,
-      floatingLabelColor: palette.textColor,
-      disabledTextColor: palette.disabledColor,
-      errorColor: Colors.red500,
-      focusColor: palette.primary1Color,
-      backgroundColor: 'transparent',
-      borderColor: palette.borderColor,
-    },
-  }, muiTheme);
+  }, muiTheme, {
+    baseTheme, // To provide backward compatibility.
+    rawTheme: baseTheme, // To provide backward compatibility.
+  });
 
   const transformers = [autoprefixer, rtl, callOnce].map((t) => t(muiTheme))
     .filter((t) => t);

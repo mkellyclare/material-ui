@@ -43,12 +43,16 @@ const FontIcon = React.createClass({
     hoverColor: React.PropTypes.string,
 
     /**
-     * Function called when mouse enters this element.
+     * Callback function fired when the mouse enters the element.
+     *
+     * @param {object} event `mouseenter` event targeting the element.
      */
     onMouseEnter: React.PropTypes.func,
 
     /**
-     * Function called when mouse leaves this element.
+     * Callback function fired when the mouse leaves the element.
+     *
+     * @param {object} event `mouseleave` event targeting the element.
      */
     onMouseLeave: React.PropTypes.func,
 
@@ -92,21 +96,21 @@ const FontIcon = React.createClass({
     });
   },
 
-  _handleMouseLeave(e) {
+  _handleMouseLeave(event) {
     // hover is needed only when a hoverColor is defined
     if (this.props.hoverColor !== undefined)
       this.setState({hovered: false});
     if (this.props.onMouseLeave) {
-      this.props.onMouseLeave(e);
+      this.props.onMouseLeave(event);
     }
   },
 
-  _handleMouseEnter(e) {
+  _handleMouseEnter(event) {
     // hover is needed only when a hoverColor is defined
     if (this.props.hoverColor !== undefined)
       this.setState({hovered: true});
     if (this.props.onMouseEnter) {
-      this.props.onMouseEnter(e);
+      this.props.onMouseEnter(event);
     }
   },
 

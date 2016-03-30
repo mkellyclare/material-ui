@@ -6,6 +6,7 @@ import PropTypeDescription from '../../../PropTypeDescription';
 import MarkdownElement from '../../../MarkdownElement';
 
 import popoverReadmeText from './README';
+import popoverNoteText from './NOTE';
 import popoverCode from '!raw!material-ui/lib/popover/popover';
 import PopoverExampleSimple from './ExampleSimple';
 import popoverExampleSimpleCode from '!raw!./ExampleSimple';
@@ -32,23 +33,24 @@ const PopoverPage = () => (
       description={descriptions.simple}
       code={popoverExampleSimpleCode}
     >
-      <PopoverExampleSimple/>
+      <PopoverExampleSimple />
     </CodeExample>
     <CodeExample
       title="Animation"
       description={descriptions.animation}
       code={popoverExampleAnimationCode}
     >
-      <PopoverExampleAnimation/>
+      <PopoverExampleAnimation />
     </CodeExample>
     <CodeExample
       title="Anchor playground"
       description={descriptions.configurable}
       code={popoverExampleConfigurableCode}
     >
-      <PopoverExampleConfigurable/>
+      <PopoverExampleConfigurable />
     </CodeExample>
-    <PropTypeDescription code={popoverCode}/>
+    <MarkdownElement text={popoverNoteText} />
+    <PropTypeDescription code={popoverCode} />
   </div>
 );
 export default PopoverPage;

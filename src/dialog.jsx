@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import EventListener from 'react-event-listener';
-import KeyCode from './utils/key-code';
+import keycode from 'keycode';
 import Transitions from './styles/transitions';
 import Overlay from './overlay';
 import RenderToLayer from './render-to-layer';
@@ -44,6 +44,11 @@ const TransitionItem = React.createClass({
     });
   },
 
+  componentWillUnmount() {
+    clearTimeout(this.enterTimeout);
+    clearTimeout(this.leaveTimeout);
+  },
+
   componentWillEnter(callback) {
     this.componentWillAppear(callback);
   },
@@ -58,7 +63,7 @@ const TransitionItem = React.createClass({
       },
     });
 
-    setTimeout(callback, 450); // matches transition duration
+    this.enterTimeout = setTimeout(callback, 450); // matches transition duration
   },
 
   componentWillLeave(callback) {
@@ -69,9 +74,7 @@ const TransitionItem = React.createClass({
       },
     });
 
-    setTimeout(() => {
-      if (this.isMounted()) callback();
-    }, 450); // matches transition duration
+    this.leaveTimeout = setTimeout(callback, 450); // matches transition duration
   },
 
   render() {
@@ -110,19 +113,19 @@ function getStyles(props, state) {
     root: {
       position: 'fixed',
       boxSizing: 'border-box',
-      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)', // Remove mobile color flashing (deprecated)
       zIndex: zIndex.dialog,
       top: 0,
       left: open ? 0 : -10000,
       width: '100%',
       height: '100%',
-      transition: open
-        ? Transitions.easeOut('0ms', 'left', '0ms')
-        : Transitions.easeOut('0ms', 'left', '450ms'),
+      transition: open ?
+        Transitions.easeOut('0ms', 'left', '0ms') :
+        Transitions.easeOut('0ms', 'left', '450ms'),
     },
     content: {
       boxSizing: 'border-box',
-      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)', // Remove mobile color flashing (deprecated)
       transition: Transitions.easeOut(),
       position: 'relative',
       width: '75%',
@@ -133,11 +136,10 @@ function getStyles(props, state) {
     body: {
       padding: baseTheme.spacing.desktopGutter,
       overflowY: autoScrollBodyContent ? 'auto' : 'hidden',
-      overflowX: 'hidden',
     },
     actionsContainer: {
       boxSizing: 'border-box',
-      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)', // Remove mobile color flashing (deprecated)
       padding: 8,
       marginBottom: 8,
       width: '100%',
@@ -269,7 +271,6 @@ const DialogInline = React.createClass({
   },
 
   _requestClose(buttonClicked) {
-
     if (!buttonClicked && this.props.modal) {
       return;
     }
@@ -284,7 +285,7 @@ const DialogInline = React.createClass({
   },
 
   _handleWindowKeyUp(event) {
-    if (event.keyCode === KeyCode.ESC) {
+    if (keycode(event) === 'esc') {
       this._requestClose(false);
     }
   },
@@ -334,9 +335,9 @@ const DialogInline = React.createClass({
       </div>
     );
 
-    const titleElement = typeof title === 'string'
-        ? <h3 className={titleClassName} style={prepareStyles(styles.title)}>{title}</h3>
-        : title;
+    const titleElement = typeof title === 'string' ?
+      <h3 className={titleClassName} style={prepareStyles(styles.title)}>{title}</h3> :
+      title;
 
     return (
       <div className={className} style={prepareStyles(styles.root)}>
@@ -387,8 +388,8 @@ const Dialog = React.createClass({
 
   propTypes: {
     /**
-     * This prop can be either a JSON object containing the actions to render (This is **DEPRECATED**),
-     * a react elements, or an array of react elements.
+     * Action buttons to display below the Dialog content (`children`).
+     * This property accepts either a React element, or an array of React elements.
      */
     actions: React.PropTypes.node,
 

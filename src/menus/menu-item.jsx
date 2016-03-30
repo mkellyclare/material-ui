@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import PureRenderMixin from 'react-addons-pure-render-mixin';
-import Colors from '../styles/colors';
 import Popover from '../popover/popover';
 import CheckIcon from '../svg-icons/navigation/check';
 import ListItem from '../lists/list-item';
@@ -26,6 +25,7 @@ const MenuItem = React.createClass({
     children: React.PropTypes.node,
 
     /**
+     * @ignore
      * Indicates if the menu should render with compact desktop styles.
      */
     desktop: React.PropTypes.bool,
@@ -212,6 +212,7 @@ const MenuItem = React.createClass({
 
     const {
       prepareStyles,
+      menuItem,
     } = this.state.muiTheme;
 
     const disabledColor = this.state.muiTheme.rawTheme.palette.disabledColor;
@@ -232,10 +233,16 @@ const MenuItem = React.createClass({
         paddingRight: sidePadding,
         paddingBottom: 0,
         paddingTop: 0,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignContent: 'space-between',
       },
 
       secondaryText: {
-        float: 'right',
+        order: 2,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
       },
 
       leftIconDesktop: {
@@ -248,7 +255,7 @@ const MenuItem = React.createClass({
         margin: 0,
         right: 24,
         top: 4,
-        fill: Colors.grey600,
+        fill: menuItem.rightIconDesktopFill,
       },
     };
 

@@ -7,8 +7,8 @@ import Paper from './paper';
 import getMuiTheme from './styles/getMuiTheme';
 
 function validateLabel(props, propName, componentName) {
-  if (!props.children && !props.label) {
-    return new Error(`Required prop label or children was not specified in ${componentName}.`);
+  if (!props.children && !props.label && !props.icon) {
+    return new Error(`Required prop label or children or icon was not specified in ${componentName}.`);
   }
 }
 
@@ -25,6 +25,7 @@ function getStyles(props, state) {
     disabledLabelColor,
     fullWidth,
     icon,
+    label,
     labelPosition,
     primary,
     secondary,
@@ -45,6 +46,13 @@ function getStyles(props, state) {
   } else if (secondary) {
     backgroundColor = raisedButton.secondaryColor;
     labelColor = raisedButton.secondaryTextColor;
+  } else {
+    if (props.backgroundColor) {
+      backgroundColor = props.backgroundColor;
+    }
+    if (props.labelColor) {
+      labelColor = props.labelColor;
+    }
   }
 
   return {
@@ -63,9 +71,12 @@ function getStyles(props, state) {
       borderRadius: 2,
       transition: Transitions.easeOut(),
       backgroundColor: backgroundColor,
+      // That's the default value for a button but not a link
+      textAlign: 'center',
     },
     label: {
       position: 'relative',
+      verticalAlign: 'middle',
       opacity: 1,
       fontSize: '14px',
       letterSpacing: 0,
@@ -77,6 +88,12 @@ function getStyles(props, state) {
       paddingRight: icon && labelPosition === 'before' ? 8 : baseTheme.spacing.desktopGutterLess,
       lineHeight: style && style.height || `${button.height}px`,
       color: labelColor,
+    },
+    icon: {
+      lineHeight: style && style.height || `${button.height}px`,
+      verticalAlign: 'middle',
+      marginLeft: label && labelPosition !== 'before' ? 12 : 0,
+      marginRight: label && labelPosition === 'before' ? 12 : 0,
     },
     overlay: {
       backgroundColor: state.hovered && !disabled && ColorManipulator.fade(labelColor, amount),
@@ -213,6 +230,11 @@ const RaisedButton = React.createClass({
     primary: React.PropTypes.bool,
 
     /**
+     * Override the inline style of ripple element.
+     */
+    rippleStyle: React.PropTypes.object,
+
+    /**
      * If true, colors button according to secondaryTextColor from the theme.
      * The primary prop has precendent if set to true.
      */
@@ -268,45 +290,45 @@ const RaisedButton = React.createClass({
     });
   },
 
-  _handleMouseDown(e) {
+  _handleMouseDown(event) {
     //only listen to left clicks
-    if (e.button === 0) {
+    if (event.button === 0) {
       this.setState({zDepth: this.state.initialZDepth + 1});
     }
-    if (this.props.onMouseDown) this.props.onMouseDown(e);
+    if (this.props.onMouseDown) this.props.onMouseDown(event);
   },
 
-  _handleMouseUp(e) {
+  _handleMouseUp(event) {
     this.setState({zDepth: this.state.initialZDepth});
-    if (this.props.onMouseUp) this.props.onMouseUp(e);
+    if (this.props.onMouseUp) this.props.onMouseUp(event);
   },
 
-  _handleMouseLeave(e) {
+  _handleMouseLeave(event) {
     if (!this.refs.container.isKeyboardFocused()) this.setState({zDepth: this.state.initialZDepth, hovered: false});
-    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
+    if (this.props.onMouseLeave) this.props.onMouseLeave(event);
   },
 
-  _handleMouseEnter(e) {
+  _handleMouseEnter(event) {
     if (!this.refs.container.isKeyboardFocused() && !this.state.touch) {
       this.setState({hovered: true});
     }
-    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
+    if (this.props.onMouseEnter) this.props.onMouseEnter(event);
   },
 
-  _handleTouchStart(e) {
+  _handleTouchStart(event) {
     this.setState({
       touch: true,
       zDepth: this.state.initialZDepth + 1,
     });
-    if (this.props.onTouchStart) this.props.onTouchStart(e);
+    if (this.props.onTouchStart) this.props.onTouchStart(event);
   },
 
-  _handleTouchEnd(e) {
+  _handleTouchEnd(event) {
     this.setState({zDepth: this.state.initialZDepth});
-    if (this.props.onTouchEnd) this.props.onTouchEnd(e);
+    if (this.props.onTouchEnd) this.props.onTouchEnd(event);
   },
 
-  _handleKeyboardFocus: (styles) => (e, keyboardFocused) => {
+  _handleKeyboardFocus: (styles) => (event, keyboardFocused) => {
     if (keyboardFocused && !this.props.disabled) {
       this.setState({zDepth: this.state.initialZDepth + 1});
       const amount = (this.props.primary || this.props.secondary) ? 0.4 : 0.08;
@@ -328,6 +350,7 @@ const RaisedButton = React.createClass({
       labelPosition,
       labelStyle,
       primary,
+      rippleStyle,
       secondary,
       ...other,
     } = this.props;
@@ -337,6 +360,7 @@ const RaisedButton = React.createClass({
     } = this.state.muiTheme;
 
     const styles = getStyles(this.props, this.state);
+    const mergedRippleStyles = Object.assign({}, styles.ripple, rippleStyle);
 
     const buttonEventHandlers = disabled && {
       onMouseDown: this._handleMouseDown,
@@ -356,11 +380,7 @@ const RaisedButton = React.createClass({
 
     const iconCloned = icon && React.cloneElement(icon, {
       color: styles.label.color,
-      style: {
-        verticalAlign: 'middle',
-        marginLeft: labelPosition === 'before' ? 0 : 12,
-        marginRight: labelPosition === 'before' ? 12 : 0,
-      },
+      style: styles.icon,
     });
 
     // Place label before or after children.
@@ -369,8 +389,7 @@ const RaisedButton = React.createClass({
         labelElement,
         iconCloned,
         children,
-      }
-      :
+      } :
       {
         children,
         iconCloned,
@@ -390,10 +409,10 @@ const RaisedButton = React.createClass({
           ref="container"
           disabled={disabled}
           style={styles.container}
-          focusRippleColor={styles.ripple.color}
-          touchRippleColor={styles.ripple.color}
-          focusRippleOpacity={styles.ripple.opacity}
-          touchRippleOpacity={styles.ripple.opacity}
+          focusRippleColor={mergedRippleStyles.color}
+          touchRippleColor={mergedRippleStyles.color}
+          focusRippleOpacity={mergedRippleStyles.opacity}
+          touchRippleOpacity={mergedRippleStyles.opacity}
         >
           <div
             ref="overlay"

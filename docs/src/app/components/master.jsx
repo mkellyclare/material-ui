@@ -6,7 +6,8 @@ import IconButton from 'material-ui/lib/icon-button';
 import {Spacing} from 'material-ui/lib/styles';
 import {StyleResizable} from 'material-ui/lib/mixins';
 
-import {Colors, getMuiTheme} from 'material-ui/lib/styles';
+import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+import {darkWhite, lightWhite, grey900} from 'material-ui/lib/styles/colors';
 
 import AppLeftNav from './AppLeftNav';
 import FullWidthSection from './FullWidthSection';
@@ -23,8 +24,11 @@ const Master = React.createClass({
 
   propTypes: {
     children: React.PropTypes.node,
-    history: React.PropTypes.object,
     location: React.PropTypes.object,
+  },
+
+  contextTypes: {
+    router: React.PropTypes.object.isRequired,
   },
 
   childContextTypes: {
@@ -62,8 +66,6 @@ const Master = React.createClass({
   },
 
   getStyles() {
-    const darkWhite = Colors.darkWhite;
-
     const styles = {
       appBar: {
         position: 'fixed',
@@ -82,7 +84,7 @@ const Master = React.createClass({
         margin: `${Spacing.desktopGutter * 2}px ${Spacing.desktopGutter * 3}px`,
       },
       footer: {
-        backgroundColor: Colors.grey900,
+        backgroundColor: grey900,
         textAlign: 'center',
       },
       a: {
@@ -91,8 +93,8 @@ const Master = React.createClass({
       p: {
         margin: '0 auto',
         padding: 0,
-        color: Colors.lightWhite,
-        maxWidth: 335,
+        color: lightWhite,
+        maxWidth: 356,
       },
       iconButton: {
         color: darkWhite,
@@ -120,7 +122,7 @@ const Master = React.createClass({
   },
 
   handleRequestChangeList(event, value) {
-    this.props.history.push(value);
+    this.context.router.push(value);
     this.setState({
       leftNavOpen: false,
     });
@@ -134,7 +136,6 @@ const Master = React.createClass({
 
   render() {
     const {
-      history,
       location,
       children,
     } = this.props;
@@ -147,12 +148,13 @@ const Master = React.createClass({
       prepareStyles,
     } = this.state.muiTheme;
 
+    const router = this.context.router;
     const styles = this.getStyles();
     const title =
-      history.isActive('/get-started') ? 'Get Started' :
-      history.isActive('/customization') ? 'Customization' :
-      history.isActive('/components') ? 'Components' :
-      history.isActive('/discover-more') ? 'Discover More' : '';
+      router.isActive('/get-started') ? 'Get Started' :
+      router.isActive('/customization') ? 'Customization' :
+      router.isActive('/components') ? 'Components' :
+      router.isActive('/discover-more') ? 'Discover More' : '';
 
     let docked = false;
     let showMenuIconButton = true;
@@ -187,13 +189,11 @@ const Master = React.createClass({
                 onChangeMuiTheme: this.handleChangeMuiTheme,
               })}
             </div>
-          </div>
-          :
+          </div> :
           children
         }
         <AppLeftNav
           style={styles.leftNav}
-          history={history}
           location={location}
           docked={docked}
           onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
@@ -203,7 +203,7 @@ const Master = React.createClass({
         <FullWidthSection style={styles.footer}>
           <p style={prepareStyles(styles.p)}>
             {'Hand crafted with love by the engineers at '}
-            <a style={styles.a} href="http://call-em-all.com">
+            <a style={styles.a} href="http://www.call-em-all.com/Careers">
               Call-Em-All
             </a>
             {' and our awesome '}

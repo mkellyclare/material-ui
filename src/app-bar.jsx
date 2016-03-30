@@ -9,7 +9,6 @@ import warning from 'warning';
 function getStyles(props, state) {
   const {
     appBar,
-    baseTheme,
     button: {
       iconButtonSize,
     },
@@ -24,10 +23,9 @@ function getStyles(props, state) {
       zIndex: zIndex.appBar,
       width: '100%',
       display: 'flex',
-      minHeight: appBar.height,
       backgroundColor: appBar.color,
-      paddingLeft: baseTheme.spacing.desktopGutter,
-      paddingRight: baseTheme.spacing.desktopGutter,
+      paddingLeft: appBar.padding,
+      paddingRight: appBar.padding,
     },
     title: {
       whiteSpace: 'nowrap',
@@ -39,6 +37,7 @@ function getStyles(props, state) {
       fontSize: 24,
       fontWeight: appBar.titleFontWeight,
       color: appBar.textColor,
+      height: appBar.height,
       lineHeight: `${appBar.height}px`,
     },
     mainElement: {
@@ -56,7 +55,7 @@ function getStyles(props, state) {
     },
     flatButton: {
       color: appBar.textColor,
-      marginTop: (iconButtonSize - flatButtonSize) / 2 + 2,
+      marginTop: (iconButtonSize - flatButtonSize) / 2 + 1,
     },
   };
 
@@ -106,16 +105,22 @@ const AppBar = React.createClass({
 
     /**
      * Callback function for when the left icon is selected via a touch tap.
+     *
+     * @param {object} event TouchTap event targeting the left `IconButton`.
      */
     onLeftIconButtonTouchTap: React.PropTypes.func,
 
     /**
      * Callback function for when the right icon is selected via a touch tap.
+     *
+     * @param {object} event TouchTap event targeting the right `IconButton`.
      */
     onRightIconButtonTouchTap: React.PropTypes.func,
 
     /**
      * Callback function for when the title text is selected via a touch tap.
+     *
+     * @param {object} event TouchTap event targeting the `title` node.
      */
     onTitleTouchTap: React.PropTypes.func,
 
@@ -232,25 +237,15 @@ const AppBar = React.createClass({
 
     let menuElementLeft;
     let menuElementRight;
-    let titleElement;
 
-    if (title) {
-      // If the title is a string, wrap in an h1 tag.
-      // If not, just use it as a node.
-      titleElement = typeof title === 'string' || title instanceof String ?
-        <h1
-          onTouchTap={this.handleTitleTouchTap}
-          style={prepareStyles(Object.assign({}, styles.title, styles.mainElement, titleStyle))}
-        >
-          {title}
-        </h1> :
-        <div
-          onTouchTap={this.handleTitleTouchTap}
-          style={prepareStyles(Object.assign({}, styles.title, styles.mainElement, titleStyle))}
-        >
-          {title}
-        </div>;
-    }
+    // If the title is a string, wrap in an h1 tag.
+    // If not, wrap in a div tag.
+    const titleComponent = typeof title === 'string' || title instanceof String ? 'h1' : 'div';
+
+    const titleElement = React.createElement(titleComponent, {
+      onTouchTap: this.handleTitleTouchTap,
+      style: prepareStyles(Object.assign(styles.title, styles.mainElement, titleStyle)),
+    }, title);
 
     if (showMenuIconButton) {
       let iconElementLeftNode = iconElementLeft;
@@ -270,7 +265,7 @@ const AppBar = React.createClass({
           </div>
         );
       } else {
-        const child = iconClassNameLeft ? '' : <NavigationMenu style={Object.assign({}, styles.iconButtonIconStyle)}/>;
+        const child = iconClassNameLeft ? '' : <NavigationMenu style={Object.assign({}, styles.iconButtonIconStyle)} />;
         menuElementLeft = (
           <IconButton
             style={styles.iconButtonStyle}

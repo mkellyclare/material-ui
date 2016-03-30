@@ -7,8 +7,8 @@ import FlatButtonLabel from './buttons/flat-button-label';
 import getMuiTheme from './styles/getMuiTheme';
 
 function validateLabel(props, propName, componentName) {
-  if (!props.children && !props.label) {
-    return new Error(`Required prop label or children was not specified in ${componentName}.`);
+  if (!props.children && !props.label && !props.icon) {
+    return new Error(`Required prop label or children or icon was not specified in ${componentName}.`);
   }
 }
 
@@ -75,22 +75,31 @@ const FlatButton = React.createClass({
     linkButton: React.PropTypes.bool,
 
     /**
-     * Called when element is focused by the keyboard.
+     * Callback function fired when the element is focused or blurred by the keyboard.
+     *
+     * @param {object} event `focus` or `blur` event targeting the element.
+     * @param {boolean} isKeyboardFocused Indicates whether the element is focused.
      */
     onKeyboardFocus: React.PropTypes.func,
 
     /**
-     * Called when the mouse enters the element.
+     * Callback function fired when the mouse enters the element.
+     *
+     * @param {object} event `mouseenter` event targeting the element.
      */
     onMouseEnter: React.PropTypes.func,
 
     /**
-     * Called when the mouse leaves the element.
+     * Callback function fired when the mouse leaves the element.
+     *
+     * @param {object} event `mouseleave` event targeting the element.
      */
     onMouseLeave: React.PropTypes.func,
 
     /**
-     * Called when a touch event is started inside the element.
+     * Callback function fired when the element is touched.
+     *
+     * @param {object} event `touchstart` event targeting the element.
      */
     onTouchStart: React.PropTypes.func,
 
@@ -160,25 +169,25 @@ const FlatButton = React.createClass({
     });
   },
 
-  _handleKeyboardFocus(e, isKeyboardFocused) {
+  _handleKeyboardFocus(event, isKeyboardFocused) {
     this.setState({isKeyboardFocused: isKeyboardFocused});
-    this.props.onKeyboardFocus(e, isKeyboardFocused);
+    this.props.onKeyboardFocus(event, isKeyboardFocused);
   },
 
-  _handleMouseEnter(e) {
+  _handleMouseEnter(event) {
     //Cancel hover styles for touch devices
     if (!this.state.touch) this.setState({hovered: true});
-    this.props.onMouseEnter(e);
+    this.props.onMouseEnter(event);
   },
 
-  _handleMouseLeave(e) {
+  _handleMouseLeave(event) {
     this.setState({hovered: false});
-    this.props.onMouseLeave(e);
+    this.props.onMouseLeave(event);
   },
 
-  _handleTouchStart(e) {
+  _handleTouchStart(event) {
     this.setState({touch: true});
-    this.props.onTouchStart(e);
+    this.props.onTouchStart(event);
   },
 
   render() {
@@ -191,6 +200,7 @@ const FlatButton = React.createClass({
       label,
       labelStyle,
       labelPosition,
+      linkButton,
       primary,
       rippleColor,
       secondary,
@@ -244,6 +254,8 @@ const FlatButton = React.createClass({
       minWidth: buttonMinWidth,
       padding: 0,
       margin: 0,
+      // That's the default value for a button but not a link
+      textAlign: 'center',
     }, style);
 
     let iconCloned;
@@ -253,9 +265,10 @@ const FlatButton = React.createClass({
       iconCloned = React.cloneElement(icon, {
         color: mergedRootStyles.color,
         style: {
+          lineHeight: `${buttonHeight}px`,
           verticalAlign: 'middle',
-          marginLeft: labelPosition === 'before' ? 0 : 12,
-          marginRight: labelPosition === 'before' ? 12 : 0,
+          marginLeft: label && labelPosition !== 'before' ? 12 : 0,
+          marginRight: label && labelPosition === 'before' ? 12 : 0,
         },
       });
 
@@ -276,8 +289,7 @@ const FlatButton = React.createClass({
         labelElement,
         iconCloned,
         children,
-      }
-      :
+      } :
       {
         children,
         iconCloned,
@@ -291,6 +303,7 @@ const FlatButton = React.createClass({
         disabled={disabled}
         focusRippleColor={buttonRippleColor}
         focusRippleOpacity={0.3}
+        linkButton={linkButton}
         onKeyboardFocus={this._handleKeyboardFocus}
         onMouseLeave={this._handleMouseLeave}
         onMouseEnter={this._handleMouseEnter}

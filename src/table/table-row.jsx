@@ -60,6 +60,7 @@ const TableRow = React.createClass({
     hovered: React.PropTypes.bool,
 
     /**
+     * @ignore
      * Called when a row cell is clicked.
      * rowNumber is the row number and columnId is
      * the column number or the column key.
@@ -67,6 +68,7 @@ const TableRow = React.createClass({
     onCellClick: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table cell is hovered.
      * rowNumber is the row number of the hovered row
      * and columnId is the column number or the column key of the cell.
@@ -74,6 +76,7 @@ const TableRow = React.createClass({
     onCellHover: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table cell is no longer hovered.
      * rowNumber is the row number of the row and columnId
      * is the column number or the column key of the cell.
@@ -81,17 +84,20 @@ const TableRow = React.createClass({
     onCellHoverExit: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when row is clicked.
      */
     onRowClick: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table row is hovered.
      * rowNumber is the row number of the hovered row.
      */
     onRowHover: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table row is no longer hovered.
      * rowNumber is the row number of the row that is no longer hovered.
      */
@@ -165,37 +171,39 @@ const TableRow = React.createClass({
     });
   },
 
-  _onRowClick(e) {
-    if (this.props.selectable && this.props.onRowClick) this.props.onRowClick(e, this.props.rowNumber);
+  _onRowClick(event) {
+    if (this.props.selectable && this.props.onRowClick) this.props.onRowClick(event, this.props.rowNumber);
   },
 
-  _onRowHover(e) {
-    if (this.props.onRowHover) this.props.onRowHover(e, this.props.rowNumber);
+  _onRowHover(event) {
+    if (this.props.onRowHover) this.props.onRowHover(event, this.props.rowNumber);
   },
 
-  _onRowHoverExit(e) {
-    if (this.props.onRowHoverExit) this.props.onRowHoverExit(e, this.props.rowNumber);
+  _onRowHoverExit(event) {
+    if (this.props.onRowHoverExit) this.props.onRowHoverExit(event, this.props.rowNumber);
   },
 
-  _onCellClick(e, columnIndex) {
-    if (this.props.selectable && this.props.onCellClick) this.props.onCellClick(e, this.props.rowNumber, columnIndex);
-    e.ctrlKey = true;
-    this._onRowClick(e);
+  _onCellClick(event, columnIndex) {
+    if (this.props.selectable && this.props.onCellClick) {
+      this.props.onCellClick(event, this.props.rowNumber, columnIndex);
+    }
+    event.ctrlKey = true;
+    this._onRowClick(event);
   },
 
-  _onCellHover(e, columnIndex) {
+  _onCellHover(event, columnIndex) {
     if (this.props.hoverable) {
       this.setState({hovered: true});
-      if (this.props.onCellHover) this.props.onCellHover(e, this.props.rowNumber, columnIndex);
-      this._onRowHover(e);
+      if (this.props.onCellHover) this.props.onCellHover(event, this.props.rowNumber, columnIndex);
+      this._onRowHover(event);
     }
   },
 
-  _onCellHoverExit(e, columnIndex) {
+  _onCellHoverExit(event, columnIndex) {
     if (this.props.hoverable) {
       this.setState({hovered: false});
-      if (this.props.onCellHoverExit) this.props.onCellHoverExit(e, this.props.rowNumber, columnIndex);
-      this._onRowHoverExit(e);
+      if (this.props.onCellHoverExit) this.props.onCellHoverExit(event, this.props.rowNumber, columnIndex);
+      this._onRowHoverExit(event);
     }
   },
 

@@ -7,6 +7,7 @@ import Transitions from '../styles/transitions';
 const CircleRipple = React.createClass({
 
   propTypes: {
+    aborted: React.PropTypes.bool,
     color: React.PropTypes.string,
 
     /**
@@ -29,8 +30,14 @@ const CircleRipple = React.createClass({
 
   getDefaultProps() {
     return {
-      opacity: 0.16,
+      opacity: 0.1,
+      aborted: false,
     };
+  },
+
+  componentWillUnmount() {
+    clearTimeout(this.enterTimer);
+    clearTimeout(this.leaveTimer);
   },
 
   componentWillAppear(callback) {
@@ -52,9 +59,9 @@ const CircleRipple = React.createClass({
   componentWillLeave(callback) {
     const style = ReactDOM.findDOMNode(this).style;
     style.opacity = 0;
-    setTimeout(() => {
-      if (this.isMounted()) callback();
-    }, 2000);
+    //If the animation is aborted, remove from the DOM immediately
+    const removeAfter = this.props.aborted ? 0 : 2000;
+    this.enterTimer = setTimeout(callback, removeAfter);
   },
 
   _animate() {
@@ -69,9 +76,7 @@ const CircleRipple = React.createClass({
     const style = ReactDOM.findDOMNode(this).style;
     style.opacity = this.props.opacity;
     autoPrefix.set(style, 'transform', 'scale(0)', this.props.muiTheme);
-    setTimeout(() => {
-      if (this.isMounted()) callback();
-    }, 0);
+    this.leaveTimer = setTimeout(callback, 0);
   },
 
   render() {

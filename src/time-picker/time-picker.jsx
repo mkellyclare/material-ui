@@ -19,6 +19,11 @@ const TimePicker = React.createClass({
      */
     autoOk: React.PropTypes.bool,
 
+   /**
+    * Override the label of the 'Cancel' button.
+    */
+    cancelLabel: React.PropTypes.string,
+
     /**
      * This is the initial time value of the component.
      */
@@ -29,6 +34,11 @@ const TimePicker = React.createClass({
      * ampm (12hr) format or 24hr format.
      */
     format: React.PropTypes.oneOf(['ampm', '24hr']),
+
+    /**
+     * Override the label of the 'OK' button.
+     */
+    okLabel: React.PropTypes.string,
 
     /**
      * Callback function that is fired when the time
@@ -83,6 +93,7 @@ const TimePicker = React.createClass({
      * Sets the time for the Time Picker programmatically.
      */
     value: React.PropTypes.object,
+
   },
 
   contextTypes: {
@@ -96,6 +107,8 @@ const TimePicker = React.createClass({
       pedantic: false,
       autoOk: false,
       style: {},
+      okLabel: 'OK',
+      cancelLabel: 'Cancel',
     };
   },
 
@@ -160,17 +173,17 @@ const TimePicker = React.createClass({
     if (this.props.onChange) this.props.onChange(null, t);
   },
 
-  _handleInputFocus(e) {
-    e.target.blur();
-    if (this.props.onFocus) this.props.onFocus(e);
+  _handleInputFocus(event) {
+    event.target.blur();
+    if (this.props.onFocus) this.props.onFocus(event);
   },
 
-  _handleInputTouchTap(e) {
-    e.preventDefault();
+  _handleInputTouchTap(event) {
+    event.preventDefault();
 
     this.openDialog();
 
-    if (this.props.onTouchTap) this.props.onTouchTap(e);
+    if (this.props.onTouchTap) this.props.onTouchTap(event);
   },
 
   _isControlled() {
@@ -188,14 +201,16 @@ const TimePicker = React.createClass({
   render() {
     const {
       autoOk,
+      cancelLabel,
       format,
+      okLabel,
       onFocus,
       onTouchTap,
       onShow,
       onDismiss,
+      pedantic,
       style,
       textFieldStyle,
-      pedantic,
       ...other,
     } = this.props;
 
@@ -223,6 +238,8 @@ const TimePicker = React.createClass({
           onShow={onShow}
           onDismiss={onDismiss}
           format={format}
+          okLabel={okLabel}
+          cancelLabel={cancelLabel}
           autoOk={autoOk}
         />
       </div>

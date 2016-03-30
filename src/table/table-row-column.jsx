@@ -37,12 +37,14 @@ const TableRowColumn = React.createClass({
     className: React.PropTypes.string,
 
     /**
+     * @ignore
      * Number to identify the header row. This property
      * is automatically populated when used with TableHeader.
      */
     columnNumber: React.PropTypes.number,
 
     /**
+     * @ignore
      * If true, this column responds to hover events.
      */
     hoverable: React.PropTypes.bool,
@@ -53,16 +55,19 @@ const TableRowColumn = React.createClass({
     key: React.PropTypes.string,
 
     /**
+     * @ignore
      * Callback function for click event.
      */
     onClick: React.PropTypes.func,
 
     /**
+     * @ignore
      * Callback function for hover event.
      */
     onHover: React.PropTypes.func,
 
     /**
+     * @ignore
      * Callback function for hover exit event.
      */
     onHoverExit: React.PropTypes.func,
@@ -106,21 +111,21 @@ const TableRowColumn = React.createClass({
     });
   },
 
-  _onClick(e) {
-    if (this.props.onClick) this.props.onClick(e, this.props.columnNumber);
+  _onClick(event) {
+    if (this.props.onClick) this.props.onClick(event, this.props.columnNumber);
   },
 
-  _onMouseEnter(e) {
+  _onMouseEnter(event) {
     if (this.props.hoverable) {
       this.setState({hovered: true});
-      if (this.props.onHover) this.props.onHover(e, this.props.columnNumber);
+      if (this.props.onHover) this.props.onHover(event, this.props.columnNumber);
     }
   },
 
-  _onMouseLeave(e) {
+  _onMouseLeave(event) {
     if (this.props.hoverable) {
       this.setState({hovered: false});
-      if (this.props.onHoverExit) this.props.onHoverExit(e, this.props.columnNumber);
+      if (this.props.onHoverExit) this.props.onHoverExit(event, this.props.columnNumber);
     }
   },
 

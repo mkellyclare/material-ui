@@ -55,7 +55,6 @@ const defaultProps = {
 };
 
 const TextFieldUnderline = (props) => {
-
   const {
     disabled,
     disabledStyle,
@@ -118,8 +117,8 @@ const TextFieldUnderline = (props) => {
 
   return (
     <div>
-      <hr style={prepareStyles(underline)}/>
-      <hr style={prepareStyles(focusedUnderline)}/>
+      <hr style={prepareStyles(underline)} />
+      <hr style={prepareStyles(focusedUnderline)} />
     </div>
   );
 };

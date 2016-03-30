@@ -1,13 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import keycode from 'keycode';
+import shallowEqual from '../utils/shallow-equal';
 import ColorManipulator from '../utils/color-manipulator';
 import Transitions from '../styles/transitions';
-import UniqueId from '../utils/unique-id';
+import deprecated from '../utils/deprecatedPropType';
 import EnhancedTextarea from '../enhanced-textarea';
 import getMuiTheme from '../styles/getMuiTheme';
 import TextFieldHint from './TextFieldHint';
 import TextFieldLabel from './TextFieldLabel';
 import TextFieldUnderline from './TextFieldUnderline';
+import warning from 'warning';
 
 const getStyles = (props, state) => {
   const {
@@ -48,7 +51,7 @@ const getStyles = (props, state) => {
       pointerEvents: 'none',
     },
     input: {
-      tapHighlightColor: 'rgba(0,0,0,0)',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)', // Remove mobile color flashing (deprecated)
       padding: 0,
       position: 'relative',
       width: '100%',
@@ -141,6 +144,11 @@ const TextField = React.createClass({
     errorText: React.PropTypes.node,
 
     /**
+     * If true, the floating label will float even when there is no value.
+     */
+    floatingLabelFixed: React.PropTypes.bool,
+
+    /**
      * The style object to use to override floating label styles.
      */
     floatingLabelStyle: React.PropTypes.object,
@@ -184,6 +192,11 @@ const TextField = React.createClass({
     multiLine: React.PropTypes.bool,
 
     /**
+     * Name applied to the input.
+     */
+    name: React.PropTypes.string,
+
+    /**
      * Callback function that is fired when the textfield loses focus.
      */
     onBlur: React.PropTypes.func,
@@ -196,7 +209,8 @@ const TextField = React.createClass({
     /**
      * The function to call when the user presses the Enter key.
      */
-    onEnterKeyDown: React.PropTypes.func,
+    onEnterKeyDown: deprecated(React.PropTypes.func,
+      'Use onKeyDown and check for keycode instead.'),
 
     /**
      * Callback function that is fired when the textfield gains focus.
@@ -276,6 +290,7 @@ const TextField = React.createClass({
   getDefaultProps() {
     return {
       disabled: false,
+      floatingLabelFixed: false,
       multiLine: false,
       fullWidth: false,
       type: 'text',
@@ -290,8 +305,8 @@ const TextField = React.createClass({
     return {
       isFocused: false,
       errorText: this.props.errorText,
-      hasValue: isValid(props.value) || isValid(props.defaultValue) ||
-        (props.valueLink && isValid(props.valueLink.value)),
+      hasValue: isValid(props.value) || isValid(props.defaultValue),
+      isClean: true,
       muiTheme: this.context.muiTheme || getMuiTheme(),
     };
   },
@@ -303,7 +318,19 @@ const TextField = React.createClass({
   },
 
   componentWillMount() {
-    this._uniqueId = UniqueId.generate();
+    const {
+      name,
+      hintText,
+      floatingLabelText,
+      id,
+    } = this.props;
+
+    warning(name || hintText || floatingLabelText || id, `We don't have enough information
+      to build a robust unique id for the TextField component. Please provide an id or a name.`);
+
+    const uniqueId = `${name}-${hintText}-${floatingLabelText}-${
+      Math.floor(Math.random() * 0xFFFF)}`;
+    this.uniqueId = uniqueId.replace(/[^A-Za-z0-9-]/gi, '');
   },
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -316,66 +343,73 @@ const TextField = React.createClass({
       nextProps = nextProps.children.props;
     }
 
-    const hasValueLinkProp = nextProps.hasOwnProperty('valueLink');
-    const hasValueProp = nextProps.hasOwnProperty('value');
-
-    if (hasValueLinkProp) {
-      newState.hasValue = isValid(nextProps.valueLink.value);
-    } else if (hasValueProp) {
-      newState.hasValue = isValid(nextProps.value);
+    if (nextProps.hasOwnProperty('value')) {
+      newState.hasValue = isValid(nextProps.value) ||
+        (this.state.isClean && isValid(nextProps.defaultValue));
     }
 
     if (newState) this.setState(newState);
   },
 
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return (
+      !shallowEqual(this.props, nextProps) ||
+      !shallowEqual(this.state, nextState) ||
+      !shallowEqual(this.context, nextContext)
+    );
+  },
+
   blur() {
-    if (this.isMounted()) this._getInputNode().blur();
+    if (this.input) this._getInputNode().blur();
   },
 
   focus() {
-    if (this.isMounted()) this._getInputNode().focus();
+    if (this.input) this._getInputNode().focus();
+  },
+
+  select() {
+    if (this.input) this._getInputNode().select();
   },
 
   getValue() {
-    return this.isMounted() ? this._getInputNode().value : undefined;
+    return this.input ? this._getInputNode().value : undefined;
   },
 
   _getInputNode() {
     return (this.props.children || this.props.multiLine) ?
-      this.refs.input.getInputNode() : ReactDOM.findDOMNode(this.refs.input);
+      this.input.getInputNode() : ReactDOM.findDOMNode(this.input);
   },
 
-  _handleInputBlur(e) {
+  _handleInputBlur(event) {
     this.setState({isFocused: false});
-    if (this.props.onBlur) this.props.onBlur(e);
+    if (this.props.onBlur) this.props.onBlur(event);
   },
 
-  _handleInputChange(e) {
-    this.setState({hasValue: isValid(e.target.value)});
-    if (this.props.onChange) this.props.onChange(e);
+  _handleInputChange(event) {
+    this.setState({hasValue: isValid(event.target.value), isClean: false});
+    if (this.props.onChange) this.props.onChange(event, event.target.value);
   },
 
-  _handleInputFocus(e) {
+  _handleInputFocus(event) {
     if (this.props.disabled)
       return;
     this.setState({isFocused: true});
-    if (this.props.onFocus) this.props.onFocus(e);
+    if (this.props.onFocus) this.props.onFocus(event);
   },
 
-  _handleInputKeyDown(e) {
-    if (e.keyCode === 13 && this.props.onEnterKeyDown) this.props.onEnterKeyDown(e);
-    if (this.props.onKeyDown) this.props.onKeyDown(e);
+  _handleInputKeyDown(event) {
+    if (keycode(event) === 'enter' && this.props.onEnterKeyDown) this.props.onEnterKeyDown(event);
+    if (this.props.onKeyDown) this.props.onKeyDown(event);
   },
 
-  _handleTextAreaHeightChange(e, height) {
+  _handleTextAreaHeightChange(event, height) {
     let newHeight = height + 24;
     if (this.props.floatingLabelText) newHeight += 24;
     ReactDOM.findDOMNode(this).style.height = `${newHeight}px`;
   },
 
   _isControlled() {
-    return this.props.hasOwnProperty('value') ||
-      this.props.hasOwnProperty('valueLink');
+    return this.props.hasOwnProperty('value');
   },
 
   render() {
@@ -384,6 +418,7 @@ const TextField = React.createClass({
       disabled,
       errorStyle,
       errorText,
+      floatingLabelFixed,
       floatingLabelText,
       fullWidth,
       hintText,
@@ -412,7 +447,7 @@ const TextField = React.createClass({
 
     const styles = getStyles(this.props, this.state);
 
-    const inputId = id || this._uniqueId;
+    const inputId = id || this.uniqueId;
 
     const errorTextElement = this.state.errorText && (
       <div style={prepareStyles(styles.error)}>{this.state.errorText}</div>
@@ -423,28 +458,24 @@ const TextField = React.createClass({
         muiTheme={this.state.muiTheme}
         style={Object.assign(styles.floatingLabel, this.props.floatingLabelStyle)}
         htmlFor={inputId}
-        shrink={this.state.hasValue || this.state.isFocused}
+        shrink={this.state.hasValue || this.state.isFocused || floatingLabelFixed}
         disabled={disabled}
       >
         {floatingLabelText}
       </TextFieldLabel>
     );
 
-
     const inputProps = {
       id: inputId,
-      ref: 'input',
-      onBlur: this._handleInputBlur,
-      onFocus: this._handleInputFocus,
+      ref: (elem) => this.input = elem,
       disabled: this.props.disabled,
+      onBlur: this._handleInputBlur,
+      onChange: this._handleInputChange,
+      onFocus: this._handleInputFocus,
       onKeyDown: this._handleInputKeyDown,
     };
 
     const inputStyleMerged = Object.assign(styles.input, inputStyle);
-
-    if (!this.props.hasOwnProperty('valueLink')) {
-      inputProps.onChange = this._handleInputChange;
-    }
 
     let inputElement;
     if (this.props.children) {
@@ -481,7 +512,8 @@ const TextField = React.createClass({
         {hintText ?
           <TextFieldHint
             muiTheme={this.state.muiTheme}
-            show={!(this.state.hasValue || (floatingLabelText && !this.state.isFocused))}
+            show={!(this.state.hasValue || (floatingLabelText && !this.state.isFocused)) ||
+                  (!this.state.hasValue && floatingLabelText && floatingLabelFixed && !this.state.isFocused)}
             style={hintStyle}
             text={hintText}
           /> :

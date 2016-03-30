@@ -8,6 +8,15 @@ import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 
 import themesText from './themes.md';
 
+const markdownText = `
+## Themes
+
+### Examples
+
+You can use the tabs to change the theme. The changes will be applied to the whole
+documentation.
+`;
+
 const {
   Checkbox,
   ClearFix,
@@ -104,15 +113,6 @@ const ThemesPage = React.createClass({
         marginBottom: 32,
         overflow: 'hidden',
       },
-      headline: {
-        fontSize: '24px',
-        lineHeight: '32px',
-        paddingTop: '16px',
-        marginBottom: '12px',
-        letterSpacing: '0',
-        fontWeight: Typography.fontWeightNormal,
-        color: Typography.textDarkBlack,
-      },
       bottomBorderWrapper: {
         borderBottom: `1px solid ${borderColor}`,
         paddingBottom: '10px',
@@ -136,16 +136,16 @@ const ThemesPage = React.createClass({
       <ClearFix>
         <div style={styles.group}>
           <div style={styles.containerCentered}>
-            <FloatingActionButton iconClassName="muidocs-icon-action-grade" disabled={true}/>
+            <FloatingActionButton iconClassName="muidocs-icon-action-grade" disabled={true} />
           </div>
           <div style={styles.containerCentered}>
             <RaisedButton label="Secondary" secondary={true} />
           </div>
           <div style={styles.containerCentered}>
-            <RaisedButton label="Primary" primary={true}/>
+            <RaisedButton label="Primary" primary={true} />
           </div>
           <div style={styles.containerCentered}>
-            <RaisedButton label="Default"/>
+            <RaisedButton label="Default" />
           </div>
         </div>
         <div style={styles.group}>
@@ -214,11 +214,11 @@ const ThemesPage = React.createClass({
           </div>
           <div style={styles.container}>
             <DropDownMenu value={3} style={{width: '100%'}}>
-              <MenuItem value={1} primaryText={'Never'}/>
-              <MenuItem value={2} primaryText={'Every Night'}/>
-              <MenuItem value={3} primaryText={'Weeknights'}/>
-              <MenuItem value={4} primaryText={'Weekends'}/>
-              <MenuItem value={5} primaryText={'Weekly'}/>
+              <MenuItem value={1} primaryText={'Never'} />
+              <MenuItem value={2} primaryText={'Every Night'} />
+              <MenuItem value={3} primaryText={'Weeknights'} />
+              <MenuItem value={4} primaryText={'Weekends'} />
+              <MenuItem value={5} primaryText={'Weekly'} />
             </DropDownMenu>
           </div>
         </div>
@@ -360,19 +360,15 @@ const ThemesPage = React.createClass({
   },
 
   render() {
-
     const styles = this.getStyles();
 
     return (
       <div>
         <Title render={(previousTitle) => `Themes - ${previousTitle}`} />
-
-        <h2 style={styles.headline}>Themes</h2>
-
+        <MarkdownElement text={markdownText} />
         <Paper style={styles.liveExamplePaper}>
           <ClearFix style={styles.liveExampleBlock}>{this.getThemeExamples()}</ClearFix>
         </Paper>
-
         <div style={styles.bottomBorderWrapper}>
           <MarkdownElement text={themesText} />
         </div>

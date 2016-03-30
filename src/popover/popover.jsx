@@ -161,13 +161,11 @@ const Popover = React.createClass({
       } else {
         if (nextProps.animated) {
           this.setState({closing: true});
-          this._timeout = setTimeout(() => {
-            if (this.isMounted()) {
-              this.setState({
-                open: false,
-                muiTheme: newMuiTheme,
-              });
-            }
+          this.timeout = setTimeout(() => {
+            this.setState({
+              open: false,
+              muiTheme: newMuiTheme,
+            });
           }, 500);
         } else {
           this.setState({
@@ -181,6 +179,10 @@ const Popover = React.createClass({
 
   componentDidUpdate() {
     this.setPlacement();
+  },
+
+  componentWillUnmount() {
+    clearTimeout(this.timeout);
   },
 
   renderLayer() {
@@ -299,11 +301,10 @@ const Popover = React.createClass({
   },
 
   autoCloseWhenOffScreen(anchorPosition) {
-    if (anchorPosition.top < 0
-        || anchorPosition.top > window.innerHeight
-        || anchorPosition.left < 0
-        || anchorPosition.left > window.innerWith
-        ) {
+    if (anchorPosition.top < 0 ||
+      anchorPosition.top > window.innerHeight ||
+      anchorPosition.left < 0 ||
+      anchorPosition.left > window.innerWith) {
       this.requestClose('offScreen');
     }
   },
@@ -379,7 +380,7 @@ const Popover = React.createClass({
 
   render() {
     return (
-      <noscript>
+      <div>
         <EventListener
           elementName="window"
           onScroll={this.handleScroll}
@@ -392,7 +393,7 @@ const Popover = React.createClass({
           useLayerForClickAway={this.props.useLayerForClickAway}
           render={this.renderLayer}
         />
-      </noscript>
+      </div>
     );
   },
 

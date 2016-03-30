@@ -1,13 +1,14 @@
 import React from 'react';
 import Checkbox from '../checkbox';
 import TableRowColumn from './table-row-column';
-import ClickAwayable from '../mixins/click-awayable';
+import ClickAwayListener from '../ClickAwayListener';
 import getMuiTheme from '../styles/getMuiTheme';
 
 const TableBody = React.createClass({
 
   propTypes: {
     /**
+     * @ignore
      * Set to true to indicate that all rows should be selected.
      */
     allRowsSelected: React.PropTypes.bool,
@@ -34,6 +35,7 @@ const TableBody = React.createClass({
     displayRowCheckbox: React.PropTypes.bool,
 
     /**
+     * @ignore
      * If true, multiple table rows can be selected.
      * CTRL/CMD+Click and SHIFT+Click are valid actions.
      * The default value is false.
@@ -41,11 +43,13 @@ const TableBody = React.createClass({
     multiSelectable: React.PropTypes.bool,
 
     /**
+     * @ignore
      * Callback function for when a cell is clicked.
      */
     onCellClick: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table cell is hovered. rowNumber
      * is the row number of the hovered row and columnId
      * is the column number or the column key of the cell.
@@ -53,6 +57,7 @@ const TableBody = React.createClass({
     onCellHover: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table cell is no longer hovered.
      * rowNumber is the row number of the row and columnId
      * is the column number or the column key of the cell.
@@ -60,12 +65,14 @@ const TableBody = React.createClass({
     onCellHoverExit: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table row is hovered.
      * rowNumber is the row number of the hovered row.
      */
     onRowHover: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a table row is no longer
      * hovered. rowNumber is the row number of the row
      * that is no longer hovered.
@@ -73,6 +80,7 @@ const TableBody = React.createClass({
     onRowHoverExit: React.PropTypes.func,
 
     /**
+     * @ignore
      * Called when a row is selected. selectedRows is an
      * array of all row selections. IF all rows have been selected,
      * the string "all" will be returned instead to indicate that
@@ -88,6 +96,7 @@ const TableBody = React.createClass({
     preScanRows: React.PropTypes.bool,
 
     /**
+     * @ignore
      * If true, table rows can be selected. If multiple
      * row selection is desired, enable multiSelectable.
      * The default value is true.
@@ -121,10 +130,6 @@ const TableBody = React.createClass({
     muiTheme: React.PropTypes.object,
   },
 
-  mixins: [
-    ClickAwayable,
-  ],
-
   getDefaultProps() {
     return {
       allRowsSelected: false,
@@ -156,9 +161,8 @@ const TableBody = React.createClass({
     };
 
     if (this.props.allRowsSelected && !nextProps.allRowsSelected) {
-      newState.selectedRows = this.state.selectedRows.length > 0
-        ? [this.state.selectedRows[this.state.selectedRows.length - 1]]
-        : [];
+      newState.selectedRows = this.state.selectedRows.length > 0 ?
+        [this.state.selectedRows[this.state.selectedRows.length - 1]] : [];
     } else {
       newState.selectedRows = this._calculatePreselectedRows(nextProps);
     }
@@ -283,20 +287,20 @@ const TableBody = React.createClass({
     return false;
   },
 
-  _onRowClick(e, rowNumber) {
-    e.stopPropagation();
+  _onRowClick(event, rowNumber) {
+    event.stopPropagation();
 
     if (this.props.selectable) {
       // Prevent text selection while selecting rows.
       window.getSelection().removeAllRanges();
-      this._processRowSelection(e, rowNumber);
+      this._processRowSelection(event, rowNumber);
     }
   },
 
-  _processRowSelection(e, rowNumber) {
+  _processRowSelection(event, rowNumber) {
     let selectedRows = this.state.selectedRows;
 
-    if (e.shiftKey && this.props.multiSelectable && selectedRows.length) {
+    if (event.shiftKey && this.props.multiSelectable && selectedRows.length) {
       const lastIndex = selectedRows.length - 1;
       const lastSelection = selectedRows[lastIndex];
 
@@ -305,7 +309,7 @@ const TableBody = React.createClass({
       } else {
         selectedRows.splice(lastIndex, 1, {start: lastSelection, end: rowNumber});
       }
-    } else if (((e.ctrlKey && !e.metaKey) || (e.metaKey && !e.ctrlKey)) && this.props.multiSelectable) {
+    } else if (((event.ctrlKey && !event.metaKey) || (event.metaKey && !event.ctrlKey)) && this.props.multiSelectable) {
       const idx = selectedRows.indexOf(rowNumber);
       if (idx < 0) {
         let foundRange = false;
@@ -419,9 +423,11 @@ const TableBody = React.createClass({
     const rows = this._createRows();
 
     return (
-      <tbody className={className} style={prepareStyles(Object.assign({}, style))}>
-        {rows}
-      </tbody>
+      <ClickAwayListener onClickAway={this.componentClickAway}>
+        <tbody className={className} style={prepareStyles(Object.assign({}, style))}>
+          {rows}
+        </tbody>
+      </ClickAwayListener>
     );
   },
 

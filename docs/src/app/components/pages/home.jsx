@@ -1,23 +1,26 @@
 import React from 'react';
-import {History} from 'react-router';
 import HomeFeature from './HomeFeature';
 import FullWidthSection from '../FullWidthSection';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 import {StyleResizable} from 'material-ui/lib/mixins';
-import {Colors, Spacing, Typography, lightBaseTheme} from 'material-ui/lib/styles';
+import {Spacing, Typography, lightBaseTheme} from 'material-ui/lib/styles';
+import {cyan500, grey200, darkWhite} from 'material-ui/lib/styles/colors';
 
 const HomePage = React.createClass({
 
+  contextTypes: {
+    router: React.PropTypes.object.isRequired,
+  },
+
   mixins: [
     StyleResizable,
-    History,
   ],
 
   _getHomePageHero() {
     const styles = {
       root: {
-        backgroundColor: Colors.cyan500,
+        backgroundColor: cyan500,
         overflow: 'hidden',
       },
       svgLogo: {
@@ -40,7 +43,7 @@ const HomePage = React.createClass({
         margin: '16px 32px 0px 32px',
       },
       h1: {
-        color: Colors.darkWhite,
+        color: darkWhite,
         fontWeight: Typography.fontWeightLight,
       },
       h2: {
@@ -88,7 +91,7 @@ const HomePage = React.createClass({
           <RaisedButton
             className="demo-button"
             label="Demo"
-            onTouchTap={this._onDemoClick}
+            onTouchTap={this.handleTouchTapDemo}
             linkButton={true}
             style={styles.demoStyle}
             labelStyle={styles.label}
@@ -101,7 +104,7 @@ const HomePage = React.createClass({
   _getHomePurpose() {
     const styles = {
       root: {
-        backgroundColor: Colors.grey200,
+        backgroundColor: grey200,
       },
       content: {
         maxWidth: 700,
@@ -130,7 +133,7 @@ const HomePage = React.createClass({
         <a href="https://www.google.com/design/spec/material-design/introduction.html">
          Google's Material Design
         </a>. We're currently using it on a project at&nbsp;
-        <a href="https://www.call-em-all.com/">Call-Em-All</a> and plan on adding to it
+        <a href="https://www.call-em-all.com/Careers">Call-Em-All</a> and plan on adding to it
         and making it better in the coming months.
       </FullWidthSection>
     );
@@ -165,7 +168,7 @@ const HomePage = React.createClass({
   _getHomeContribute() {
     const styles = {
       root: {
-        backgroundColor: Colors.grey200,
+        backgroundColor: grey200,
         textAlign: 'center',
       },
       h3: {
@@ -196,8 +199,8 @@ const HomePage = React.createClass({
     );
   },
 
-  _onDemoClick() {
-    this.history.pushState(null, '/components');
+  handleTouchTapDemo() {
+    this.context.router.push('/components');
   },
 
   render() {

@@ -12,12 +12,17 @@ function getDefaultTheme() {
 
 export default function muiThemeable() {
   return (Component) => {
+    const MuiComponent = (props, context) => {
+      const {
+        muiTheme = getDefaultTheme(),
+      } = context;
 
-    const MuiComponent = (props, {muiTheme = getDefaultTheme()}) => {
-      return <Component {...props} muiTheme={muiTheme} />;
+      return <Component muiTheme={muiTheme} {...props} />;
     };
 
-    MuiComponent.contextTypes = {muiTheme: React.PropTypes.object};
+    MuiComponent.contextTypes = {
+      muiTheme: React.PropTypes.object,
+    };
 
     return MuiComponent;
   };

@@ -37,6 +37,8 @@ export default class PopoverExampleConfigurable extends React.Component {
   }
 
   handleTouchTap = (event) => {
+    // This prevents ghost click.
+    event.preventDefault();
     this.setState({
       open: true,
       anchorEl: event.currentTarget,
@@ -77,7 +79,7 @@ export default class PopoverExampleConfigurable extends React.Component {
         <h3 style={styles.h3}>Current Settings</h3>
         <pre>
           anchorOrigin: {JSON.stringify(this.state.anchorOrigin)}
-          <br/>
+          <br />
           targetOrigin: {JSON.stringify(this.state.targetOrigin)}
         </pre>
         <h3 style={styles.h3}>Position Options</h3>
@@ -155,7 +157,7 @@ export default class PopoverExampleConfigurable extends React.Component {
           targetOrigin={this.state.targetOrigin}
           onRequestClose={this.handleRequestClose}
         >
-          <Menu zDepth={0}>
+          <Menu>
             <MenuItem primaryText="Refresh" />
             <MenuItem primaryText="Help &amp; feedback" />
             <MenuItem primaryText="Settings" />
