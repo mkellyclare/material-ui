@@ -64,6 +64,7 @@ export const SnackbarBody = (props, context) => {
   const {
     open, // eslint-disable-line no-unused-vars
     action,
+    actionStyle,
     message,
     onActionTouchTap,
     style,
@@ -72,10 +73,10 @@ export const SnackbarBody = (props, context) => {
 
   const {prepareStyles} = context.muiTheme;
   const styles = getStyles(props, context);
-
+  
   const actionButton = action && (
     <FlatButton
-      style={styles.action}
+      style={Object.assign(styles.action, actionStyle)}
       label={action}
       onTouchTap={onActionTouchTap}
     />
@@ -96,6 +97,10 @@ SnackbarBody.propTypes = {
    * The label for the action on the snackbar.
    */
   action: PropTypes.string,
+  /**
+   * 
+   */
+  actionStyle: React.PropTypes.object,
   /**
    * The message to be displayed.
    *

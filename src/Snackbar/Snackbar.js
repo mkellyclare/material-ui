@@ -55,6 +55,10 @@ class Snackbar extends Component {
      */
     bodyStyle: PropTypes.object,
     /**
+     * Override the inline-styles of the action element.
+     */
+    actionStyle: PropTypes.object,
+    /**
      * The css class name of the root element.
      */
     className: PropTypes.string,
@@ -197,6 +201,7 @@ class Snackbar extends Component {
     const {
       onActionTouchTap,
       style,
+      actionStyle,
       bodyStyle,
       ...others,
     } = this.props;
@@ -218,6 +223,7 @@ class Snackbar extends Component {
             message={message}
             action={action}
             style={bodyStyle}
+            actionStyle={actionStyle}
             onActionTouchTap={onActionTouchTap}
           />
         </div>
