@@ -13,6 +13,7 @@ class DatePickerDialog extends Component {
     autoOk: PropTypes.bool,
     cancelLabel: PropTypes.node,
     container: PropTypes.oneOf(['dialog', 'inline']),
+    containerStyle: PropTypes.object,
     disableYearSelection: PropTypes.bool,
     firstDayOfWeek: PropTypes.number,
     initialDate: PropTypes.object,
@@ -79,7 +80,9 @@ class DatePickerDialog extends Component {
       this.props.onAccept(this.refs.calendar.getSelectedDate());
     }
 
-    this.dismiss();
+    this.setState({
+      open: false,
+    });
   };
 
   handleWindowKeyUp = (event) => {
@@ -95,6 +98,7 @@ class DatePickerDialog extends Component {
       DateTimeFormat,
       cancelLabel,
       container,
+      containerStyle,
       disableYearSelection,
       initialDate,
       firstDayOfWeek,
@@ -124,10 +128,10 @@ class DatePickerDialog extends Component {
     };
 
     const Container = (container === 'inline' ? Popover : Dialog);
+
     return (
       <div {...other} ref="root">
         <Container
-          {...other}
           anchorEl={this.refs.root} // For Popover
           animation={PopoverAnimationFromTop} // For Popover
           bodyStyle={styles.dialogBodyContent}
@@ -136,7 +140,7 @@ class DatePickerDialog extends Component {
           repositionOnUpdate={true}
           open={open}
           onRequestClose={this.handleRequestClose}
-          style={styles.dialogBodyContent}
+          style={Object.assign(styles.dialogBodyContent, containerStyle)}
         >
           <EventListener
             target="window"

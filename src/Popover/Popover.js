@@ -4,7 +4,7 @@ import EventListener from 'react-event-listener';
 import RenderToLayer from '../internal/RenderToLayer';
 import propTypes from '../utils/propTypes';
 import Paper from '../Paper';
-import throttle from 'lodash.throttle';
+import throttle from 'lodash/throttle';
 import PopoverAnimationDefault from './PopoverAnimationDefault';
 
 class Popover extends Component {
@@ -272,7 +272,7 @@ class Popover extends Component {
     if (anchorPosition.top < 0 ||
       anchorPosition.top > window.innerHeight ||
       anchorPosition.left < 0 ||
-      anchorPosition.left > window.innerWith) {
+      anchorPosition.left > window.innerWidth) {
       this.requestClose('offScreen');
     }
   }

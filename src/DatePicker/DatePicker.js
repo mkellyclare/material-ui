@@ -40,6 +40,10 @@ class DatePicker extends Component {
      */
     defaultDate: PropTypes.object,
     /**
+     * Override the inline-styles of DatePickerDialog's Container element.
+     */
+    dialogContainerStyle: PropTypes.object,
+    /**
      * Disables the year selection in the date picker.
      */
     disableYearSelection: PropTypes.bool,
@@ -99,8 +103,6 @@ class DatePicker extends Component {
     onDismiss: PropTypes.func,
     /**
      * Callback function that is fired when the Date Picker's `TextField` gains focus.
-     *
-     * @param {object} event `focus` event targeting the `TextField`.
      */
     onFocus: PropTypes.func,
     /**
@@ -131,7 +133,7 @@ class DatePicker extends Component {
     /**
      * Sets the date for the Date Picker programmatically.
      */
-    value: PropTypes.any,
+    value: PropTypes.object,
     /**
      * Wordings used inside the button of the dialog.
      */
@@ -146,7 +148,6 @@ class DatePicker extends Component {
     firstDayOfWeek: 1,
     style: {},
   };
-
 
   static contextTypes = {
     muiTheme: PropTypes.object.isRequired,
@@ -210,21 +211,28 @@ class DatePicker extends Component {
         date: date,
       });
     }
-    if (this.props.onChange) this.props.onChange(null, date);
+    if (this.props.onChange) {
+      this.props.onChange(null, date);
+    }
   };
 
   handleFocus = (event) => {
     event.target.blur();
-    if (this.props.onFocus) this.props.onFocus(event);
+    if (this.props.onFocus) {
+      this.props.onFocus(event);
+    }
   };
 
   handleTouchTap = (event) => {
-    if (this.props.onTouchTap) this.props.onTouchTap(event);
+    if (this.props.onTouchTap) {
+      this.props.onTouchTap(event);
+    }
 
-    if (!this.props.disabled)
+    if (!this.props.disabled) {
       setTimeout(() => {
         this.openDialog();
       }, 0);
+    }
   };
 
   isControlled() {
@@ -258,6 +266,7 @@ class DatePicker extends Component {
       className,
       container,
       defaultDate, // eslint-disable-line no-unused-vars
+      dialogContainerStyle,
       disableYearSelection,
       firstDayOfWeek,
       locale,
@@ -294,6 +303,7 @@ class DatePicker extends Component {
           autoOk={autoOk}
           cancelLabel={cancelLabel}
           container={container}
+          containerStyle={dialogContainerStyle}
           disableYearSelection={disableYearSelection}
           firstDayOfWeek={firstDayOfWeek}
           initialDate={this.state.dialogDate}

@@ -53,23 +53,11 @@ class StepButton extends Component {
       PropTypes.string,
       PropTypes.number,
     ]),
-    /**
-     * Callback function fired when the mouse enters the element.
-     *
-     * @param {object} event `mouseenter` event targeting the element.
-     */
+    /** @ignore */
     onMouseEnter: PropTypes.func,
-    /**
-     * Callback function fired when the mouse leaves the element.
-     *
-     * @param {object} event `mouseleave` event targeting the element.
-     */
+    /** @ignore */
     onMouseLeave: PropTypes.func,
-    /**
-     * Callback function fired when the element is touched.
-     *
-     * @param {object} event `touchstart` event targeting the element.
-     */
+    /** @ignore */
     onTouchStart: PropTypes.func,
     /**
      * Override the inline-style of the root element.
@@ -84,13 +72,13 @@ class StepButton extends Component {
 
   state = {
     hovered: false,
-    touch: false,
+    touched: false,
   };
 
   handleMouseEnter = (event) => {
     const {onMouseEnter} = this.props;
     // Cancel hover styles for touch devices
-    if (!this.state.touch) {
+    if (!this.state.touched) {
       this.setState({hovered: true});
     }
     if (typeof onMouseEnter === 'function') {
@@ -108,7 +96,9 @@ class StepButton extends Component {
 
   handleTouchStart = (event) => {
     const {onTouchStart} = this.props;
-    this.setState({touch: true});
+    if (!this.state.touched) {
+      this.setState({touched: true});
+    }
     if (typeof onTouchStart === 'function') {
       onTouchStart(event);
     }
@@ -121,6 +111,9 @@ class StepButton extends Component {
       completed,
       disabled,
       icon,
+      onMouseEnter, // eslint-disable-line no-unused-vars
+      onMouseLeave, // eslint-disable-line no-unused-vars
+      onTouchStart, // eslint-disable-line no-unused-vars
       style,
       ...other,
     } = this.props;

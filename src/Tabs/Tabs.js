@@ -36,9 +36,9 @@ class Tabs extends Component {
     contentContainerStyle: PropTypes.object,
     /**
      * Specify initial visible tab index.
-     * Initial selected index is set by default to 0.
-     * If initialSelectedIndex is set but larger than the total amount of specified tabs,
-     * initialSelectedIndex will revert back to default.
+     * If `initialSelectedIndex` is set but larger than the total amount of specified tabs,
+     * `initialSelectedIndex` will revert back to default.
+     * If `initialSlectedIndex` is set to any negative value, no tab will be selected intially.
      */
     initialSelectedIndex: PropTypes.number,
     /**
@@ -149,14 +149,14 @@ class Tabs extends Component {
 
   handleTabTouchTap = (value, event, tab) => {
     const valueLink = this.getValueLink(this.props);
-    const tabIndex = tab.props.tabIndex;
+    const index = tab.props.index;
 
     if ((valueLink.value && valueLink.value !== value) ||
-      this.state.selectedIndex !== tabIndex) {
+      this.state.selectedIndex !== index) {
       valueLink.requestChange(value, event, tab);
     }
 
-    this.setState({selectedIndex: tabIndex});
+    this.setState({selectedIndex: index});
 
     if (tab.props.onActive) {
       tab.props.onActive(tab);
@@ -206,8 +206,8 @@ class Tabs extends Component {
 
       return React.cloneElement(tab, {
         key: index,
+        index: index,
         selected: this.getSelected(tab, index),
-        tabIndex: index,
         width: `${width}%`,
         onTouchTap: this.handleTabTouchTap,
       });

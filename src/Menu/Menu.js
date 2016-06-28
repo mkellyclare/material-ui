@@ -9,6 +9,7 @@ import propTypes from '../utils/propTypes';
 import List from '../List/List';
 import deprecated from '../utils/deprecatedPropType';
 import warning from 'warning';
+import {HotKeyHolder} from './menuUtils';
 
 function getStyles(props, context) {
   const {
@@ -135,12 +136,7 @@ class Menu extends Component {
      * @param {number} index The index of the menu item.
      */
     onItemTouchTap: PropTypes.func,
-    /**
-     * Callback function fired when the menu is focused and a key
-     * is pressed.
-     *
-     * @param {object} event `keydown` event targeting the menu.
-     */
+    /** @ignore */
     onKeyDown: PropTypes.func,
     /**
      * This is the placement of the menu relative to the `IconButton`.
@@ -206,6 +202,8 @@ class Menu extends Component {
       isKeyboardFocused: props.initiallyKeyboardFocused,
       keyWidth: props.desktop ? 64 : 56,
     };
+
+    this.hotKeyHolder = new HotKeyHolder();
   }
 
   componentDidMount() {
@@ -224,10 +222,11 @@ class Menu extends Component {
     });
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
     return (
       !shallowEqual(this.props, nextProps) ||
-      !shallowEqual(this.state, nextState)
+      !shallowEqual(this.state, nextState) ||
+      !shallowEqual(this.context, nextContext)
     );
   }
 
@@ -375,7 +374,8 @@ class Menu extends Component {
 
   handleKeyDown = (event) => {
     const filteredChildren = this.getFilteredChildren(this.props.children);
-    switch (keycode(event)) {
+    const key = keycode(event);
+    switch (key) {
       case 'down':
         event.preventDefault();
         this.incrementKeyboardFocusIndex(filteredChildren);
@@ -395,9 +395,34 @@ class Menu extends Component {
         event.preventDefault();
         this.decrementKeyboardFocusIndex();
         break;
+      default:
+        if (key.length === 1) {
+          const hotKeys = this.hotKeyHolder.append(key);
+          if (this.setFocusIndexStartsWith(hotKeys)) {
+            event.preventDefault();
+          }
+        }
     }
     this.props.onKeyDown(event);
   };
+
+  setFocusIndexStartsWith(keys) {
+    let foundIndex = -1;
+    React.Children.forEach(this.props.children, (child, index) => {
+      if (foundIndex >= 0) {
+        return;
+      }
+      const {primaryText} = child.props;
+      if (typeof primaryText === 'string' && new RegExp(`^${keys}`, 'i').test(primaryText)) {
+        foundIndex = index;
+      }
+    });
+    if (foundIndex >= 0) {
+      this.setFocusIndex(foundIndex, true);
+      return true;
+    }
+    return false;
+  }
 
   handleMenuItemTouchTap(event, item, index) {
     const children = this.props.children;
